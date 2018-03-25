@@ -148,7 +148,9 @@ app.delete("/:action/:id", (req, res) => {
   }
 })
 
-const server = app.listen(appConfig.PORT, () => {
+// console.log('process.env', process.env)
+
+const server = app.listen((process.env.PORT || appConfig.PORT), () => {
   // const port = server.address().PORT
   console.log("App is now running on port", appConfig.PORT)
 })

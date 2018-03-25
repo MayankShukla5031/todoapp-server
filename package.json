@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "scripts": {
     "start:dev": "nodemon --ignore lib --exec babel-node src/index.js",
-    "start:prod": "babel src -d lib && node lib/index.js",
+    "build:prod": "babel src -d lib /*&& node lib/index.js*/",
     "start": "node lib/index.js"
   },
   "author": "mayank",
