@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon --ignore lib --exec babel-node src/index.js",
-    "build": "babel src -d lib && node lib/index.js"
+    "start:dev": "nodemon --ignore lib --exec babel-node src/index.js",
+    "start:prod": "babel src -d lib && node lib/index.js",
+    "start": "npm start:prod"
   },
   "author": "mayank",
   "license": "ISC",
