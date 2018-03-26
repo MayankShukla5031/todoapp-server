@@ -75,18 +75,18 @@ app.post("/:action", (req, res) => {
   const action= req.params.action
   if (action === 'todo') {
     const Todo = dbConfig.Todo()
-    const { name, status, created_on, completion_date, user_id } = req.body
+    const { name, priority, status, created_on, completion_date, user_id } = req.body
     const todo = Todo({
       todo_id: uuid(),
       name,
       status,
+      priority,
       created_on,
       completion_date,
       user_id,
     })
     todo.save((err, doc) => {
       if (err) {
-
         res.end(TODO_CREATION_SUCCESS)
       }
       res.end(JSON.stringify(doc))
@@ -147,8 +147,6 @@ app.delete("/:action/:id", (req, res) => {
     res.send("Hello")    
   }
 })
-
-// console.log('process.env', process.env)
 
 const server = app.listen((process.env.PORT || appConfig.PORT), () => {
   // const port = server.address().PORT
