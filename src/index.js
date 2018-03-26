@@ -76,49 +76,64 @@ app.post("/:action", (req, res) => {
   if (action === 'todo') {
     const Todo = dbConfig.Todo()
     const { name, priority, status, created_on, completion_date, user_id } = req.body
-    const todo = Todo({
-      todo_id: uuid(),
-      name,
-      status,
-      priority,
-      created_on,
-      completion_date,
-      user_id,
-    })
-    todo.save((err, doc) => {
-      if (err) {
-        res.end(TODO_CREATION_SUCCESS)
-      }
-      res.end(JSON.stringify(doc))
-    })
+    if(!name || !priority ) {
+      res.statusCode = 400
+      res.send("Kindly fill all the details")
+    } else {
+        const todo = Todo({
+          todo_id: uuid(),
+          name,
+          status,
+          priority,
+          created_on,
+          completion_date,
+          user_id,
+        })
+        todo.save((err, doc) => {
+          if (err) {
+            res.end(TODO_CREATION_SUCCESS)
+          }
+          res.end(JSON.stringify(doc))
+        })
+    }
   } else if(action === 'register') {
     const UserInfo = dbConfig.UserInfo()
     const { name, email_id, password } = req.body
-    const user = UserInfo({
-      user_id: uuid(),
-      name,
-      email_id,
-      password,
-    });
-    user.save((err, doc) => {
-      if (err) {
-        res.end(USER_CREATION_FAILED)
-      }
-      res.end(JSON.stringify(doc))
-    })
+    if(!name || !email_id || !password) {
+      res.statusCode = 400
+      res.send("Kindly fill all the details")
+    } else {
+      const user = UserInfo({
+        user_id: uuid(),
+        name,
+        email_id,
+        password,
+      });
+      user.save((err, doc) => {
+        if (err) {
+          res.end(USER_CREATION_FAILED)
+        }
+        res.end(JSON.stringify(doc))
+      })
+    }
   } else if(action === 'login') {
     const UserInfo = dbConfig.UserInfo()
     const { email: email_id, password } = req.body
-    UserInfo.find({ email_id, password }, (err, doc) => {
-      if (doc && !doc.length) {
-        res.statusCode = 400
-        res.send('No User Found')
-      }
-      else
-        res.send(JSON.stringify(doc[0]))
-    })
-  }
-  // res.send('action not found')
+    if (!email_id || !password) {
+      res.statusCode = 400
+      res.send("Kindly fill all the details")
+    } else {
+        UserInfo.find({ email_id, password }, (err, doc) => {
+          if (doc && !doc.length) {
+            res.statusCode = 400
+            res.send('No User Found')
+          }
+          else
+            res.send(JSON.stringify(doc[0]))
+        })
+    }
+  } else
+    res.send('action not found')
 })
 
 app.put("/:action/:id", (req, res) => {
@@ -126,12 +141,18 @@ app.put("/:action/:id", (req, res) => {
   if(params.action === 'todo') {
     const Todo = dbConfig.Todo()
     const { user_id, todo_id } = req.body
-    Todo.findOneAndUpdate({ user_id, todo_id }, { $set: req.body }, {returnNewDocument: true})
+    const { name, status, priority } = req.body
+    if (!name || !status || !priority) {
+      res.statusCode = 400
+      res.send("Invalid todo id passed")
+    } else {
+      Todo.findOneAndUpdate({ user_id, todo_id }, { $set: req.body }, {returnNewDocument: true})
       .then(doc => {
         res.send(JSON.stringify(doc))
       })
+    }
   } else {
-    res.send("Hello")    
+    res.send("Unknown action")    
   }
 })
 
@@ -140,11 +161,16 @@ app.delete("/:action/:id", (req, res) => {
   if(params.action === 'todo') {
     const Todo = dbConfig.Todo()
     const user_id = req.get('user_id')
-    Todo.deleteOne({ user_id, todo_id: params.id }, (err, doc) => {
-      res.send(TODO_DELETION_SUCCESS)
-    })
+    if (!params.id) {
+      res.statusCode = 400
+      res.send("Invalid todo id passed")
+    } else {
+      Todo.deleteOne({ user_id, todo_id: params.id }, (err, doc) => {
+        res.send(TODO_DELETION_SUCCESS)
+      })
+    }
   } else {
-    res.send("Hello")    
+    res.send("Unknown action")    
   }
 })
 
